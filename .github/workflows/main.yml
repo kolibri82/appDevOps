@@ -1,0 +1,33 @@
+name: Node.js Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: npm ci
+      - run: npm test
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+
+      - name: Automated Back4App B4a deployment
+        uses: rimonhanna/github-action-b4a-deploy@522814cdc5bcdc820d6782113c56eb4dffb57c2a
+        with:
+          B4A_API_KEY: ${{secrets.BACK4APP_API_KEY}}
+          APP_NAME: appDevOps
